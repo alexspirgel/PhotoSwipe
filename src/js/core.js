@@ -235,6 +235,12 @@ var _isOpen,
 		}, 100);
 	},
 
+	_onFocusIn = function(event) {
+		if(!self.template.contains(document.activeElement)) {
+			self.template.focus();
+		}
+	},
+
 	_bindEvents = function() {
 		framework.bind(document, 'keydown', self);
 
@@ -243,6 +249,9 @@ var _isOpen,
 			framework.bind(self.scrollWrap, 'click', self);
 		}
 		
+		if(_options.restrictModalFocus) {
+			framework.bind(window, 'focusin', _onFocusIn);
+		}
 
 		if(!_options.mouseUsed) {
 			framework.bind(document, 'mousemove', _onFirstMouseMove);
@@ -258,6 +267,7 @@ var _isOpen,
 		framework.unbind(window, 'scroll', _globalEventHandlers.scroll);
 		framework.unbind(document, 'keydown', self);
 		framework.unbind(document, 'mousemove', _onFirstMouseMove);
+		framework.unbind(window, 'focusin', _onFocusIn);
 
 		if(_features.transform) {
 			framework.unbind(self.scrollWrap, 'click', self);
@@ -691,6 +701,9 @@ var publicMethods = {
 		_isDestroying = true;
 		_shout('close');
 		_unbindEvents();
+		if(_options.defaultFocusElement) {
+			_options.defaultFocusElement.focus();
+		}
 
 		_showOrHide(self.currItem, null, true, self.destroy);
 	},
